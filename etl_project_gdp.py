@@ -20,12 +20,14 @@ log_file = 'etl_project_log.txt'
 df = pd.DataFrame(columns=["Country", "GDP_USD_billion"])
 
 
+
 def extract_data(url, df) :
     html_page = requests.get(url).text
     data = BeautifulSoup(html_page, 'html.parser')
     tables = data.find_all('tbody')
     rows = tables[2].find_all('tr')
 
+    # extract from url 
     for row in rows :
         col = row.find_all('td')
         
@@ -45,7 +47,8 @@ def extract_data(url, df) :
 
 
 def transform(data) :
-    data['GDP_USD_billion'] = round(data['GDP_USD_billion'], 2)
+    #process the data 
+    data['GDP_USD_billion'] = round(data['GDP_USD_billion'], 2) #rounding GDP_USD_billion to 2 decimal places
     return data
         
     
@@ -58,34 +61,43 @@ def load_data(data, db_name, db_table, target_file) :
 
 def log_progress(message):
     timestamp_format = '%Y-%h-%d-%H:%M:%S'
-    now = datetime.now()
+    now = datetime.now() #get current timestmap
     timestamp = now.strftime(timestamp_format)
     with open(log_file, "a") as f:
         f.write(timestamp + ',' + message + '\n')
 
 
 
-
+#log the intialization of the ETL process
 log_progress('ETL process started')
+
+#log the beginning of the Extraction process
 
 log_progress('Extraction started')
 data_extracted = extract_data(url, df)
+
+#log the completion of the extraction process
 log_progress('Extraction finished')
 
+#log the beginning of the transform process
 log_progress('Transforming started')
 
 data_processed = transform(data_extracted)
 print(data_processed)
 
+#log the completion of transform process
 log_progress('Transforming finished')
 
+#log the beginning of the transform process
 log_progress('Loading started')
 
 load_data(data_processed, db_name, db_table, json_path)
 
+#log the completion of the transform process
 log_progress('Loading finished')
 
-log_progress('ETL process finished')
+#log the completion of the ETL process
+log_progress('ETL process finished !')
 
 
 
