@@ -49,10 +49,10 @@ def transform(data) :
     return data
         
     
-def load_data(data, db_name, db_table):
-    df.to_json(json_path)
+def load_data(data, db_name, db_table, target_file) :
+    data.to_json(target_file)
     conn = sqlite3.connect(db_name)
-    df.to_sql(db_name, conn, if_exists='replace', index=False)
+    data.to_sql(db_table, conn, if_exists='replace', index=False)
     conn.close()
 
 
@@ -64,6 +64,28 @@ def log_progress(message):
         f.write(timestamp + ',' + message + '\n')
 
 
+
+
+log_progress('ETL process started')
+
+log_progress('Extraction started')
+data_extracted = extract_data(url, df)
+log_progress('Extraction finished')
+
+log_progress('Transforming started')
+
+data_processed = transform(data_extracted)
+print(data_processed)
+
+log_progress('Transforming finished')
+
+log_progress('Loading started')
+
+load_data(data_processed, db_name, db_table, json_path)
+
+log_progress('Loading finished')
+
+log_progress('ETL process finished')
 
 
 
