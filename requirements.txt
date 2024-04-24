@@ -1,0 +1,4 @@
+pandas
+requests
+BeautifulSoup (bs4)
+sqlite3
