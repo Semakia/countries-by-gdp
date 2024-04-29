@@ -30,7 +30,15 @@ class TestETLProjectGDP(unittest.TestCase):
         self.assertEqual(transformed_data['GDP_USD_billion'].iloc[0], 100.57)
         self.assertEqual(transformed_data['GDP_USD_billion'].iloc[1], 200.99)
 
-    
-    
+
+def test_load_data(self):
+       
+        data = pd.DataFrame({"Country": ["USA", "China"], "GDP_USD_billion": [100.5678, 200.9876]})
+        
+        load_data(data, db_name, db_table, json_path)
+        # Make sure the json file is really created
+        self.assertTrue(os.path.exists(json_path))
+
+
 if __name__ == '__main__':
     unittest.main()
