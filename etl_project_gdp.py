@@ -12,8 +12,8 @@ from bs4 import BeautifulSoup
 
 
 url = 'https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)'
-json_path = '~/projects/etl_prohect_gdp/Countries_by_GDP.json'
-# json_path = 'Countries_by_GDP.json'
+#json_path = '~/projects/etl_prohect_gdp/Countries_by_GDP.json'
+json_path = 'Countries_by_GDP.json'
 db_table = 'Countries_by_GDP' 
 db_name = 'World_Economies.db'
 
