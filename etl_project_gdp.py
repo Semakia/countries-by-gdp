@@ -1,6 +1,7 @@
 
 
 import os
+import numpy as np
 import pandas as pd
 import requests
 import sqlite3
@@ -12,11 +13,13 @@ from bs4 import BeautifulSoup
 
 url = 'https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)'
 json_path = '~/projects/etl_prohect_gdp/Countries_by_GDP.json'
-db_table = 'Countries_by_GDP'
+# json_path = 'Countries_by_GDP.json'
+db_table = 'Countries_by_GDP' 
 db_name = 'World_Economies.db'
 
 log_file = 'etl_project_log.txt'
 
+# create an empty data frame to hold extracted data 
 df = pd.DataFrame(columns=["Country", "GDP_USD_billion"])
 
 
@@ -37,8 +40,17 @@ def extract_data(url, df) :
                 country = country_link.get_text(strip=True)
             else:
                 country = col[0].get_text(strip=True)
+            
+            # convert the value of gdp in float
+            gdp_value = col[2].contents[0].replace(",", "").replace(".", "")  
+            if gdp_value == '—':
+                # Si la valeur est '—', vous pouvez la remplacer par NaN ou ignorer cette entrée
+                gdp_value = np.nan
+            else:
+                gdp_value = float(gdp_value) 
             data_dict ={"Country" : country,
-                        "GDP_USD_billion" : col[2].contents[0]
+                        "GDP_USD_billion" : gdp_value
+
                         }
             df1 = pd.DataFrame(data_dict, index = [0])
             df = pd.concat([df, df1], ignore_index = True)
@@ -46,7 +58,7 @@ def extract_data(url, df) :
     return df 
 
 
-def transform(data) :
+def transform_data(data) :
     #process the data 
     data['GDP_USD_billion'] = round(data['GDP_USD_billion'], 2) #rounding GDP_USD_billion to 2 decimal places
     return data
@@ -67,6 +79,17 @@ def log_progress(message):
         f.write(timestamp + ',' + message + '\n')
 
 
+def execute_query(query, db_name) :
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    result = cursor.execute(query)
+    return result
+
+
+
+
+
+
 
 #log the intialization of the ETL process
 log_progress('ETL process started')
@@ -82,7 +105,7 @@ log_progress('Extraction finished')
 #log the beginning of the transform process
 log_progress('Transforming started')
 
-data_processed = transform(data_extracted)
+data_processed = transform_data(data_extracted)
 print(data_processed)
 
 #log the completion of transform process
@@ -101,6 +124,10 @@ log_progress('ETL process finished !')
 
 
 
+# Get the countries which have gdp more thant 100 USD Billion
 
+countries_more_than_100 = execute_query("SELECT * FROM Countries_by_GDP WHERE GDP_USD_billion >= 100 ", db_name)
 
+for row in countries_more_than_100 :
+    print(row)
 
