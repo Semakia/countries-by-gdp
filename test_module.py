@@ -22,7 +22,15 @@ class TestETLProjectGDP(unittest.TestCase):
         
         self.assertTrue(len(data) > 0) # Make sure the returned DataFrame contains data
 
-    
+    def test_transform_data(self):
+        data = pd.DataFrame({"Country": ["USA", "China"], "GDP_USD_billion": [100.5678, 200.9876]})
+        # Test the transform_data function
+        transformed_data = transform_data(data)
+        # Make sure GDP_USD_billion values ​​are rounded to 2 decimal places
+        self.assertEqual(transformed_data['GDP_USD_billion'].iloc[0], 100.57)
+        self.assertEqual(transformed_data['GDP_USD_billion'].iloc[1], 200.99)
 
+    
+    
 if __name__ == '__main__':
     unittest.main()
