@@ -19,6 +19,7 @@ L'objectif principal de ce projet est de collecter les données sur le PIB des p
     - etl_project_log.txt: Le fichier de journalisation où les étapes du processus ETL sont enregistrées.
     World_Economies.db: La base de données SQLite où les données sont stockées.
     - Countries_by_GDP.json: Le fichier JSON où les données sont également sauvegardées.
+    - test_module.py : Le fichier qui contient les tests unitaires 
 
 ### Utilisation:
     - Assurez-vous d'avoir les dépendances requises installées sur votre environnement Python.

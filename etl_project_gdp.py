@@ -12,9 +12,9 @@ from bs4 import BeautifulSoup
 
 
 url = 'https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)'
-#json_path = '~/projects/etl_prohect_gdp/Countries_by_GDP.json'
-json_path = 'Countries_by_GDP.json'
-db_table = 'Countries_by_GDP' 
+json_path = '~/projects/etl_prohect_gdp/Countries_by_GDP.json'
+
+table_name = 'Countries_by_GDP' 
 db_name = 'World_Economies.db'
 
 log_file = 'etl_project_log.txt'
@@ -44,7 +44,7 @@ def extract_data(url, df) :
             # convert the value of gdp in float
             gdp_value = col[2].contents[0].replace(",", "").replace(".", "")  
             if gdp_value == '—':
-                # Si la valeur est '—', vous pouvez la remplacer par NaN ou ignorer cette entrée
+                
                 gdp_value = np.nan
             else:
                 gdp_value = float(gdp_value) 
@@ -66,9 +66,9 @@ def transform_data(data) :
     
 def load_data(data, db_name, db_table, target_file) :
     data.to_json(target_file)
-    conn = sqlite3.connect(db_name)
-    data.to_sql(db_table, conn, if_exists='replace', index=False)
-    conn.close()
+    connection = sqlite3.connect(db_name)
+    data.to_sql(db_table, connection, if_exists='replace', index=False)
+    connection.close()
 
 
 def log_progress(message):
@@ -79,9 +79,9 @@ def log_progress(message):
         f.write(timestamp + ',' + message + '\n')
 
 
-def execute_query(query, db_name) :
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
+def querify_database(query, db_name) :
+    connection = sqlite3.connect(db_name)
+    cursor = connection.cursor()
     result = cursor.execute(query)
     return result
 
@@ -114,7 +114,7 @@ log_progress('Transforming finished')
 #log the beginning of the transform process
 log_progress('Loading started')
 
-load_data(data_processed, db_name, db_table, json_path)
+load_data(data_processed, db_name, table_name, json_path)
 
 #log the completion of the transform process
 log_progress('Loading finished')
@@ -126,7 +126,7 @@ log_progress('ETL process finished !')
 
 # Get the countries which have gdp more thant 100 USD Billion
 
-countries_more_than_100 = execute_query("SELECT * FROM Countries_by_GDP WHERE GDP_USD_billion >= 100 ", db_name)
+countries_more_than_100 = querify_database("SELECT * FROM Countries_by_GDP WHERE GDP_USD_billion >= 100 ", db_name)
 
 for row in countries_more_than_100 :
     print(row)
